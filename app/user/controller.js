@@ -14,11 +14,13 @@ module.exports = {
             } else {
                 user.connections.push({
                     user: friendId
-                }).save()
+                })
                 friend.connections.push({
                     user: req.user._id
-                }).save()
+                })
             }
+            await user.save()
+            await friend.save()
 
             res.status(200).json({ data: `Berhasil tambahkan teman!` })
         } catch (err) {
