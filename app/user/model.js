@@ -3,6 +3,13 @@ const bcrypt = require("bcrypt")
 
 const HASH_ROUND = 10
 
+let connectionSchema = mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }
+})
+
 let userSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -26,7 +33,8 @@ let userSchema = new mongoose.Schema({
     },
     location: {
         type: String
-    }
+    },
+    connections: [connectionSchema]
 })
 
 userSchema.pre("save", function(next) {
