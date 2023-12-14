@@ -23,7 +23,19 @@ let userSchema = new mongoose.Schema({
     status: {
         type: String,
         require: true
+    },
+    location: {
+        type: String
     }
 })
+
+userSchema.pre("save", function(next) {
+    if (!this.isModified("password")) {
+        return next()
+    }
+
+    this.password = bcrypt.hashSync(this.password, HASH_ROUND);
+    next();
+});
 
 module.exports = mongoose.model("User", userSchema)
