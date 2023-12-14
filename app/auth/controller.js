@@ -9,14 +9,20 @@ module.exports = {
             const { username, firstName, lastName, email, password, status } = req.body
 
             // cek duplikat email
-            const existingUser = await User.findOne({ email });
-            if (existingUser) {
-                return res.status(400).json({ message: `${email} sudah terdaftar!` });
+            const existingEmail = await User.findOne({ email });
+            if (existingEmail) {
+                return res.status(400).json({ message: `email ${email} sudah terdaftar!` });
             }
+
+            // cek duplikat username
+            const existingUsername = await User.findOne({ username });
+            if (existingUsername) {
+                return res.status(400).json({ message: `username ${username} sudah terdaftar!` });
+            }    
 
             const newUser = new User({
                 username,
-                name: firstName + lastName,
+                name: `${firstName} ${lastName}`,
                 email, 
                 password,
                 status
