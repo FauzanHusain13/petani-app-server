@@ -11,6 +11,9 @@ let connectionSchema = mongoose.Schema({
 })
 
 let userSchema = new mongoose.Schema({
+    profilePath: {
+        type: String
+    },
     username: {
         type: String,
         require: true,
