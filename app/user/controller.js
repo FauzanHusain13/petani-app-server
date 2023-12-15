@@ -8,9 +8,16 @@ module.exports = {
             const user = await User.findOne({ _id: req.user._id })
             const friend = await User.findOne({ _id: friendId })
 
-            if(friend.connections.includes(req.user._id)) {
-                user.connections = user.connections.filter((id) => id.toString() !== friendId.toString())
-                friend.connections = friend.connections.filter((id) => id.toString() !== req.user._id.toString())
+            const isConnected = user.connections.some(connection => connection.user.toString() === friendId);
+
+            if(isConnected) {
+                user.connections = user.connections.filter(connection => connection.user.toString() !== friendId);
+                friend.connections = friend.connections.filter(connection => connection.user.toString() !== req.user.id);
+
+                await user.save();
+                await friend.save();
+
+                res.status(200).json({ data: `Berhasil hapus koneksi!` })
             } else {
                 user.connections.push({
                     user: friendId
@@ -18,11 +25,11 @@ module.exports = {
                 friend.connections.push({
                     user: req.user._id
                 })
-            }
-            await user.save()
-            await friend.save()
+                await user.save()
+                await friend.save()
 
-            res.status(200).json({ data: `Berhasil tambahkan teman!` })
+                res.status(200).json({ data: `Berhasil tambahkan koneksi!` })
+            }
         } catch (err) {
             res.status(500).json({ error: err.message || "Internal server error" })
         }
