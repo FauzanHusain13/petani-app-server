@@ -11,9 +11,6 @@ let connectionSchema = mongoose.Schema({
 })
 
 let userSchema = new mongoose.Schema({
-    profilePath: {
-        type: String
-    },
     username: {
         type: String,
         require: true,
@@ -37,7 +34,10 @@ let userSchema = new mongoose.Schema({
     location: {
         type: String
     },
-    connections: [connectionSchema]
+    connections: [connectionSchema],
+    profilePath: {
+        type: String
+    },
 })
 
 userSchema.pre("save", function(next) {
