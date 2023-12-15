@@ -1,6 +1,16 @@
 const User = require("./model")
 
 module.exports = {
+    getDetailUser: async(req, res) => {
+        try {
+            const { id } = req.params
+            const user = await User.findOne({ _id: id })
+    
+            res.status(200).json({ data: user })
+        } catch (error) {
+            res.status(500).json({ error: err.message || "Internal server error" })
+        }
+    },
     connection: async(req, res) => {
         try {
             const { friendId } = req.params
@@ -33,5 +43,12 @@ module.exports = {
         } catch (err) {
             res.status(500).json({ error: err.message || "Internal server error" })
         }
-    }
+    },
+    // editProfile: async(req, res) => {
+    //     try {
+            
+    //     } catch (err) {
+    //         res.status(500).json({ error: err.message || "Internal server error" })
+    //     }
+    // }
 }
