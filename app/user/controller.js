@@ -1,10 +1,14 @@
+const fs = require("fs")
+const path = require("path")
+const { rootPath } = require("../../config")
+
 const User = require("./model")
 
 module.exports = {
     getDetailUser: async(req, res) => {
         try {
-            const { id } = req.params
-            const user = await User.findOne({ _id: id })
+            const { username } = req.params
+            const user = await User.findOne({ username: username })
     
             res.status(200).json({ data: user })
         } catch (error) {
@@ -44,11 +48,71 @@ module.exports = {
             res.status(500).json({ error: err.message || "Internal server error" })
         }
     },
-    // editProfile: async(req, res) => {
-    //     try {
-            
-    //     } catch (err) {
-    //         res.status(500).json({ error: err.message || "Internal server error" })
-    //     }
-    // }
+    editProfile: async(req, res) => {
+        try {
+            const { username, name, status } = req.body
+            const payload = {}
+
+            if(username.length) payload.username = username
+            if(name.length) payload.name = name
+            if(status.length) payload.status = status
+
+            if(req.file) {
+                let tmp_path = req.file.path;
+                let originalExt = req.file.originalname.split(".")[req.file.originalname.split(".").length - 1];
+                let filename = req.file.filename + "." + originalExt;
+                let target_path = path.resolve(rootPath, `public/uploads/profile/${filename}`);
+
+                const src = fs.createReadStream(tmp_path);
+                const dest = fs.createWriteStream(target_path);
+
+                src.pipe(dest);
+
+                src.on("end", async() => {
+                    let user = await User.findOne({ _id: req.user.id });
+                    let currentImage = `${rootPath}/public/uploads/profile/${user.profilePath}`;
+                    if(fs.existsSync(currentImage)){
+                        fs.unlinkSync(currentImage)
+                    }
+
+                    user = await User.findOneAndUpdate({
+                        _id: req.user._id
+                    },{
+                        ...payload,
+                        profilePath: filename
+                    }, { new: true, runValidators: true })
+
+                    res.status(201).json({
+                        data: {
+                            id: user.id,
+                            username: user.username,
+                            name: user.name,
+                            status: user.status,
+                            profilePath: user.profilePath
+                        }
+                    })
+                })
+
+                src.on("err", async() => {
+                    next(err)
+                })
+            } else {
+                const user = await User.findOneAndUpdate({
+                    _id: req.user._id
+                }, payload, { new: true, runValidators: true })
+
+                res.status(201).json({
+                    data: {
+                        id: user.id,
+                        username: user.username,
+                        name: user.name,
+                        status: user.status,
+                        profilePath: user.profilePath
+                    }
+                })
+            }
+        } catch (err) {
+            res.status(500).json({ error: err.message || "Internal server error" })
+        }
+    }
 }
