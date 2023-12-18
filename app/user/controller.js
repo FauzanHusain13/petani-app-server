@@ -48,9 +48,9 @@ module.exports = {
             res.status(500).json({ error: err.message || "Internal server error" })
         }
     },
-    editProfile: async(req, res) => {
+    editProfile: async(req, res, next) => {
         try {
-            const { username, name, status } = req.body
+            const { username = "", name = "", status = "" } = req.body
             const payload = {}
 
             if(username.length) payload.username = username
@@ -69,8 +69,8 @@ module.exports = {
                 src.pipe(dest);
 
                 src.on("end", async() => {
-                    let user = await User.findOne({ _id: req.user.id });
-                    let currentImage = `${rootPath}/public/uploads/profile/${user.profilePath}`;
+                    const user = await User.findOne({ _id: req.user.id });
+                    const currentImage = `${rootPath}/public/uploads/profile/${user.profilePath}`;    
                     if(fs.existsSync(currentImage)){
                         fs.unlinkSync(currentImage)
                     }
@@ -112,7 +112,29 @@ module.exports = {
                 })
             }
         } catch (err) {
-            res.status(500).json({ error: err.message || "Internal server error" })
+            res.status(500).json({ message: err.message || "Internal server error" })
+        }
+    },
+    editDescription: async(req, res) => {
+        try {
+            const { description = "" } = req.body
+            const payload = {}
+
+            if(description.length) payload.description = description
+
+            let user = await User.findOneAndUpdate({
+                _id: req.user.id
+            }, payload, { new: true, runValidators: true })
+
+            res.status(201).json({
+                data: {
+                    id: user.id,
+                    username: user.username,
+                    description: user.description,
+                }
+            })
+        } catch (err) {
+            res.status(500).json({ message: err.message || "Internal server error" })
         }
     }
 }

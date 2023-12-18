@@ -47,9 +47,9 @@ module.exports = {
                             id: user.id,
                             username: user.username,
                             name: user.name,
-                            email: user.email,
                             status: user.status,
-                            location: user.location
+                            location: user.location,
+                            profilePath: user.profilePath
                         }
                     }, jwtkey)
 

@@ -38,6 +38,9 @@ let userSchema = new mongoose.Schema({
     profilePath: {
         type: String
     },
+    description: {
+        type: String
+    }
 })
 
 userSchema.pre("save", function(next) {
