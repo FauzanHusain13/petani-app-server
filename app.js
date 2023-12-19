@@ -9,6 +9,7 @@ const cors = require("cors")
 // konfigurasi API
 const authRouter = require("./app/auth/router")
 const userRouter = require("./app/user/router")
+const postRouter = require("./app/post/router")
 
 const app = express();
 app.use(cors())
@@ -28,6 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // API
 app.use(`${URL}/auth`, authRouter)
 app.use(`${URL}/user`, userRouter)
+app.use(`${URL}/post`, postRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
