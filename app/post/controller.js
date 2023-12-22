@@ -93,5 +93,16 @@ module.exports = {
         } catch (err) {
             res.status(500).json({ message: err.message || "Internal server error" }) 
         }
+    },
+    getPersonalActivity: async(req, res) => {
+        try {
+            const { userId } = req.params
+
+            const post = await Post.find({ user: userId }).populate("user")
+
+            res.status(200).json({ data: post })
+        } catch (err) {
+            res.status(500).json({ message: err.message || "Internal server error" }) 
+        }
     }
 }

@@ -1,5 +1,5 @@
 const express = require("express")
-const { createActivity, deleteActivity } = require("./controller")
+const { createActivity, deleteActivity, getPersonalActivity } = require("./controller")
 const { isLoginUser } = require("../middleware/auth")
 
 const router = express.Router()
@@ -11,5 +11,6 @@ const upload = multer({
 
 router.post("/activity", isLoginUser, upload.single("picturePath"), createActivity)
 router.delete("/activity/:activityId", isLoginUser, deleteActivity)
+router.get("/activity/:userId", isLoginUser, getPersonalActivity)
 
 module.exports = router
