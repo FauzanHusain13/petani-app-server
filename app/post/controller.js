@@ -62,5 +62,36 @@ module.exports = {
         } catch (err) {
            res.status(500).json({ message: err.message || "Internal server error" }) 
         }
+    },
+    deleteActivity: async(req, res) => {
+        try {
+            const { activityId } = req.params
+
+            const post = await Post.findOne({
+                _id: activityId,
+                user: req.user.id
+            })
+
+            if (!post) {
+                return res.status(404).json({ message: "Postingan tidak ditemukan" });
+            }
+
+            await Post.findOneAndDelete({
+                _id: activityId,
+                user: req.user.id
+            })
+
+            let currentImage = `${rootPath}/public/uploads/post/${post.picturePath}`;
+            
+            if(fs.existsSync(currentImage)){
+                fs.unlinkSync(currentImage)
+            }
+
+            res.status(201).json({
+                data: "Berhasil hapus postingan"
+            })
+        } catch (err) {
+            res.status(500).json({ message: err.message || "Internal server error" }) 
+        }
     }
 }
