@@ -74,7 +74,7 @@ module.exports = {
             })
 
             if (!post) {
-                return res.status(404).json({ message: "Postingan tidak ditemukan" });
+                return res.status(404).json({ message: "Aktivitas tidak ditemukan" });
             }
 
             await Post.findOneAndDelete({
@@ -118,6 +118,36 @@ module.exports = {
             res.status(200).json({ data: posts });
         } catch (err) {
             res.status(500).json({ message: err.message || "Internal server error" }) 
+        }
+    },
+    likeActivity: async(req, res) => {
+        try {
+            const { postId } = req.params
+
+            const post = await Post.findById({ _id: postId })
+            const isLiked = post.likes.get(req.user.id)
+
+            if (!post) {
+                return res.status(404).json({ message: "Aktivitas tidak ditemukan!" })
+            }
+    
+            if(isLiked) {
+                post.likes.delete(req.user.id)
+            } else {
+                post.likes.set(req.user.id, true)
+            }
+    
+            const updatedPost = await Post.findByIdAndUpdate(
+                postId,
+                { 
+                    likes: post.likes 
+                },
+                { new: true }
+            )
+    
+            res.status(200).json({ data: updatedPost })  
+        } catch (err) {
+            res.status(500).json({ message: err.message || "Internal server error" })
         }
     }
 }
