@@ -108,15 +108,14 @@ module.exports = {
     },
     getFeedActivity: async(req, res) => {
         try {
-            const { userId } = req.params
-            
-            const user = await User.findOne({ _id: userId })
-            const connections = user.connections
+            const { userId } = req.params;
 
-            const posts = await Post.find({ user: { $in: connections }}).populate("user")
-            console.log(posts)
-
-            res.status(200).json({ data: posts })
+            const user = await User.findOne({ _id: userId });
+            const connections = user.connections.map(connection => connection.user);
+    
+            const posts = await Post.find({ user: { $in: connections } }).populate("user");
+    
+            res.status(200).json({ data: posts });
         } catch (err) {
             res.status(500).json({ message: err.message || "Internal server error" }) 
         }
