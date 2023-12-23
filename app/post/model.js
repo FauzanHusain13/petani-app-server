@@ -1,9 +1,17 @@
 const mongoose = require("mongoose")
 
 const commentSchema = mongoose.Schema({
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+    userId: {
+        type: String,
+    },
+    username: {
+        type: String,
+    },
+    name: {
+        type: String,
+    },
+    profilePath: {
+        type: String,
     },
     comment: {
         type: String,

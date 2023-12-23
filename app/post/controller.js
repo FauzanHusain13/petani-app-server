@@ -100,6 +100,9 @@ module.exports = {
             const { userId } = req.params
 
             const post = await Post.find({ user: userId }).populate("user")
+            if (!post) {
+                return res.status(404).json({ message: "Aktivitas tidak ditemukan!" })
+            }
 
             res.status(200).json({ data: post })
         } catch (err) {
@@ -146,6 +149,31 @@ module.exports = {
             )
     
             res.status(200).json({ data: updatedPost })  
+        } catch (err) {
+            res.status(500).json({ message: err.message || "Internal server error" })
+        }
+    },
+    commentActivity: async(req, res) => {
+        try {
+            const { postId } = req.params
+            const { comment } = req.body
+        
+            const post = await Post.findOne({ _id: postId })
+            if (!post) {
+              return res.status(404).json({ message: "Aktivitas tidak ditemukan!" })
+            }
+        
+            post.comments.push({
+                userId: req.user.id,
+                username: req.user.username,
+                name: req.user.name,
+                profilePath: req.user.profilePath,
+                comment: comment
+            })
+        
+            const updatedPost = await post.save()
+        
+            res.status(200).json({ data: updatedPost })
         } catch (err) {
             res.status(500).json({ message: err.message || "Internal server error" })
         }
