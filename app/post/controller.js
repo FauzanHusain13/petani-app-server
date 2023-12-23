@@ -3,6 +3,7 @@ const path = require("path")
 const { rootPath } = require("../../config")
 
 const Post = require("./model")
+const User = require("../user/model")
 
 module.exports = {
     createActivity: async(req, res) => {
@@ -101,6 +102,21 @@ module.exports = {
             const post = await Post.find({ user: userId }).populate("user")
 
             res.status(200).json({ data: post })
+        } catch (err) {
+            res.status(500).json({ message: err.message || "Internal server error" }) 
+        }
+    },
+    getFeedActivity: async(req, res) => {
+        try {
+            const { userId } = req.params
+            
+            const user = await User.findOne({ _id: userId })
+            const connections = user.connections
+
+            const posts = await Post.find({ user: { $in: connections }}).populate("user")
+            console.log(posts)
+
+            res.status(200).json({ data: posts })
         } catch (err) {
             res.status(500).json({ message: err.message || "Internal server error" }) 
         }
