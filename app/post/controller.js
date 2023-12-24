@@ -127,7 +127,8 @@ module.exports = {
         try {
             const { postId } = req.params
 
-            const post = await Post.findById({ _id: postId })
+            const post = await Post.findOne({ _id: postId })
+            const user = await User.findOne({ _id: post.user })
             const isLiked = post.likes.get(req.user.id)
 
             if (!post) {
@@ -138,6 +139,21 @@ module.exports = {
                 post.likes.delete(req.user.id)
             } else {
                 post.likes.set(req.user.id, true)
+
+                // validasi: jika didalam array notifications sudah ada req.user.username
+                const checkNotification = user.notifications.some(notif => notif.username.toString() === req.user.username);
+
+                // kirim notifikasi
+                if(!checkNotification) {
+                    user.notifications.push({
+                        userId: req.user.id,
+                        username: req.user.username,
+                        name: req.user.name,
+                        profilePath: req.user.profilePath,
+                        message: `${req.user.username} menyukai aktivitas anda`
+                    })
+                    await user.save()
+                }
             }
     
             const updatedPost = await Post.findByIdAndUpdate(
