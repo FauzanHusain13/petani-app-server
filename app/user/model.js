@@ -10,6 +10,24 @@ let connectionSchema = mongoose.Schema({
     }
 })
 
+let notificationSchema = mongoose.Schema({
+    userId: {
+        type: String,
+    },
+    username: {
+        type: String,
+    },
+    name: {
+        type: String,
+    },
+    profilePath: {
+        type: String,
+    },
+    message: {
+        type: String
+    }
+})
+
 let userSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -40,7 +58,8 @@ let userSchema = new mongoose.Schema({
     },
     description: {
         type: String
-    }
+    },
+    notifications: [notificationSchema]
 })
 
 userSchema.pre("save", function(next) {
