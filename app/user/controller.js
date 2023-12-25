@@ -148,5 +148,21 @@ module.exports = {
         } catch (err) {
             res.status(500).json({ message: err.message || "Internal server error" })
         }
+    },
+    deleteNotifications: async(req, res) => {
+        try {
+            const user = await User.findOne({ _id: req.user.id });
+
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+
+            user.notifications = [];
+            await user.save();
+        
+            res.status(200).json({ message: "Notifications cleared successfully" });
+        } catch (err) {
+            res.status(500).json({ message: err.message || "Internal server error" })
+        }
     }
 }
