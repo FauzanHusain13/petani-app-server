@@ -175,6 +175,7 @@ module.exports = {
             const { comment } = req.body
         
             const post = await Post.findOne({ _id: postId })
+            const user = await User.findOne({ _id: post.user })
             if (!post) {
               return res.status(404).json({ message: "Aktivitas tidak ditemukan!" })
             }
@@ -186,8 +187,18 @@ module.exports = {
                 profilePath: req.user.profilePath,
                 comment: comment
             })
-        
             const updatedPost = await post.save()
+
+            if(updatedPost) {
+                user.notifications.push({
+                    userId: req.user.id,
+                    username: req.user.username,
+                    name: req.user.name,
+                    profilePath: req.user.profilePath,
+                    message: `${req.user.username} mengomentari aktivitas anda`
+                })
+                await user.save()
+            }
         
             res.status(200).json({ data: updatedPost })
         } catch (err) {
