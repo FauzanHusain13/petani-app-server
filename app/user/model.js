@@ -28,6 +28,13 @@ let notificationSchema = mongoose.Schema({
     }
 })
 
+let bookmarkSchema = mongoose.Schema({
+    post: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Post"
+    },
+})
+
 let userSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -59,7 +66,8 @@ let userSchema = new mongoose.Schema({
     description: {
         type: String
     },
-    notifications: [notificationSchema]
+    notifications: [notificationSchema],
+    bookmarks: [bookmarkSchema]
 })
 
 userSchema.pre("save", function(next) {

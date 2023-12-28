@@ -232,5 +232,26 @@ module.exports = {
         } catch (err) {
             res.status(500).json({ message: err.message || "Internal server error" })
         }
+    },
+    addBookmarks: async(req, res) => {
+        try {
+            const { postId } = req.params
+
+            const post = await Post.findOne({ _id: postId })
+            const user = await User.findOne({ _id: req.user.id })
+           
+            if (!post) {
+                return res.status(404).json({ message: "Aktivitas tidak ditemukan!" })
+            }
+
+            user.bookmarks.push({
+                post
+            })
+            await user.save()
+
+            res.status(201).json({ data: user })
+        } catch (err) {
+            res.status(500).json({ message: err.message || "Internal server error" })
+        }
     }
 }

@@ -1,5 +1,5 @@
 const express = require("express")
-const { getDetailUser, connection, editProfile, editDescription, searchUser, deleteNotifications } = require("./controller")
+const { getDetailUser, connection, editProfile, editDescription, searchUser, deleteNotifications, getBookmarks } = require("./controller")
 const { isLoginUser } = require("../middleware/auth")
 
 const router = express.Router()
@@ -10,6 +10,7 @@ const upload = multer({
 })
 
 router.get("/:username", isLoginUser, getDetailUser)
+router.get("/bookmarks/:userId", isLoginUser, getBookmarks)
 router.patch("/connection/:friendId", isLoginUser, connection)
 router.put("/profile", isLoginUser, upload.single("profilePath"), editProfile)
 router.put("/about", isLoginUser, editDescription)

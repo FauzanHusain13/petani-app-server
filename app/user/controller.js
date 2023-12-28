@@ -8,10 +8,31 @@ module.exports = {
     getDetailUser: async(req, res) => {
         try {
             const { username } = req.params
-            const user = await User.findOne({ username: username })
+            const user = await User.findOne({ username: username }).select("_id username name email password status location connections profilePath")
     
             res.status(200).json({ data: user })
         } catch (error) {
+            res.status(500).json({ error: err.message || "Internal server error" })
+        }
+    },
+    getBookmarks: async(req, res) => {
+        try {
+            const { userId } = req.params
+            const user = await User.findOne({ _id: userId }).populate({
+                path: 'bookmarks.post',
+                populate: {
+                    path: 'user',
+                    model: 'User'
+                }
+            }).select("bookmarks")
+
+            if(userId === req.user.id) {
+                const bookmarks = user.bookmarks
+                res.status(200).json({ data: bookmarks })
+            } else {
+                return res.status(404).json({ message: "Anda tidak memiliki akses!" })
+            }
+        } catch (err) {
             res.status(500).json({ error: err.message || "Internal server error" })
         }
     },
