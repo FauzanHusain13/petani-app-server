@@ -233,23 +233,33 @@ module.exports = {
             res.status(500).json({ message: err.message || "Internal server error" })
         }
     },
-    addBookmarks: async(req, res) => {
+    bookmarkActivity: async (req, res) => {
         try {
             const { postId } = req.params
-
+    
             const post = await Post.findOne({ _id: postId })
             const user = await User.findOne({ _id: req.user.id })
-           
+    
             if (!post) {
                 return res.status(404).json({ message: "Aktivitas tidak ditemukan!" })
             }
-
-            user.bookmarks.push({
-                post
-            })
-            await user.save()
-
-            res.status(201).json({ data: user })
+    
+            const existingBookmarkIndex = user.bookmarks.findIndex((bookmark) => bookmark.post.toString() === postId)
+    
+            if (existingBookmarkIndex !== -1) {
+                user.bookmarks.splice(existingBookmarkIndex, 1)
+                await user.save()
+    
+                res.status(200).json({ message: "Bookmark dihapus", data: user })
+            } else {
+                user.bookmarks.push({
+                    post: post._id
+                })
+    
+                await user.save()
+    
+                res.status(201).json({ message: "Bookmark ditambahkan", data: user })
+            }
         } catch (err) {
             res.status(500).json({ message: err.message || "Internal server error" })
         }
