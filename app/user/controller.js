@@ -79,33 +79,34 @@ module.exports = {
             if(status.length) payload.status = status
 
             if(req.file) {
-                let tmp_path = req.file.path;
-                let originalExt = req.file.originalname.split(".")[req.file.originalname.split(".").length - 1];
-                let filename = req.file.filename + "." + originalExt;
-                let target_path = path.resolve(rootPath, `public/uploads/profile/${filename}`);
+                let tmp_path = req.file.path
+                let originalExt = req.file.originalname.split(".")[req.file.originalname.split(".").length - 1]
+                let filename = req.file.filename + "." + originalExt
+                let target_path = path.resolve(rootPath, `public/uploads/profile/${filename}`)
 
-                const src = fs.createReadStream(tmp_path);
-                const dest = fs.createWriteStream(target_path);
+                const src = fs.createReadStream(tmp_path)
+                const dest = fs.createWriteStream(target_path)
 
-                src.pipe(dest);
+                src.pipe(dest)
 
                 src.on("end", async() => {
-                    const user = await User.findOne({ _id: req.user.id });
+                    const user = await User.findOne({ _id: req.user.id })
+
                     const currentImage = `${rootPath}/public/uploads/profile/${user.profilePath}`;    
-                    if(fs.existsSync(currentImage)){
+                    if(fs.existsSync(currentImage)) {
                         fs.unlinkSync(currentImage)
                     }
 
                     user = await User.findOneAndUpdate({
-                        _id: req.user._id
-                    },{
+                        _id: req.user.id
+                    }, {
                         ...payload,
                         profilePath: filename
                     }, { new: true, runValidators: true })
 
                     res.status(201).json({
                         data: {
-                            id: user.id,
+                            id: user._id,
                             username: user.username,
                             name: user.name,
                             status: user.status,
@@ -114,17 +115,17 @@ module.exports = {
                     })
                 })
 
-                src.on("err", async() => {
+                src.on("err", async(err) => {
                     next(err)
                 })
             } else {
                 const user = await User.findOneAndUpdate({
-                    _id: req.user._id
+                    _id: req.user.id
                 }, payload, { new: true, runValidators: true })
 
                 res.status(201).json({
                     data: {
-                        id: user.id,
+                        id: user._id,
                         username: user.username,
                         name: user.name,
                         status: user.status,
