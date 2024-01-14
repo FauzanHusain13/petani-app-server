@@ -61,10 +61,12 @@ let userSchema = new mongoose.Schema({
     },
     connections: [connectionSchema],
     profilePath: {
-        type: String
+        type: String,
+        default: ""
     },
     description: {
-        type: String
+        type: String,
+        default: ""
     },
     notifications: [notificationSchema],
     bookmarks: [bookmarkSchema]
