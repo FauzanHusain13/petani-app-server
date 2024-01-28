@@ -1,5 +1,5 @@
 const express = require("express")
-const { createActivity, deleteActivity, getPersonalActivity, getFeedActivity, likeActivity, commentActivity, deleteCommentActivity, bookmarkActivity } = require("./controller")
+const { createActivity, deleteActivity, getPersonalActivity, getFeedActivity, likeActivity, commentActivity, deleteCommentActivity, bookmarkActivity, getDetailActivity } = require("./controller")
 const { isLoginUser } = require("../middleware/auth")
 
 const router = express.Router()
@@ -17,5 +17,7 @@ router.patch("/activity/like/:postId", isLoginUser, likeActivity)
 router.post("/activity/comment/:postId", isLoginUser, commentActivity)
 router.delete("/activity/comment/:postId/:commentId", isLoginUser, deleteCommentActivity)
 router.patch("/activity/bookmarks/:postId", isLoginUser, bookmarkActivity)
+
+router.get("/activity/:postId", isLoginUser, getDetailActivity)
 
 module.exports = router
