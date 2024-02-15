@@ -250,7 +250,7 @@ module.exports = {
                 user.bookmarks.splice(existingBookmarkIndex, 1)
                 await user.save()
     
-                res.status(200).json({ message: "Bookmark dihapus", data: user })
+                res.status(200).json({ message: "Menghapus di bookmark!", data: user })
             } else {
                 user.bookmarks.push({
                     post: post._id
@@ -258,7 +258,7 @@ module.exports = {
     
                 await user.save()
     
-                res.status(201).json({ message: "Bookmark ditambahkan", data: user })
+                res.status(201).json({ message: "Menambahkan ke bookmark!", data: user })
             }
         } catch (err) {
             res.status(500).json({ message: err.message || "Internal server error" })
@@ -269,8 +269,7 @@ module.exports = {
         try {
             const { postId } = req.params
 
-            const post = await Post.findOne({ _id: postId })
-            await post.save()
+            const post = await Post.findOne({ _id: postId }).populate("user")
 
             res.status(200).json({ data: post })
         } catch (err) {

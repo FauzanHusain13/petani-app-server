@@ -18,6 +18,6 @@ router.post("/activity/comment/:postId", isLoginUser, commentActivity)
 router.delete("/activity/comment/:postId/:commentId", isLoginUser, deleteCommentActivity)
 router.patch("/activity/bookmarks/:postId", isLoginUser, bookmarkActivity)
 
-router.get("/activity/:postId", isLoginUser, getDetailActivity)
+router.get("/activity/detail/:postId", isLoginUser, getDetailActivity)
 
 module.exports = router
