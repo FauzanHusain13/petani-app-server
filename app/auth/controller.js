@@ -49,6 +49,7 @@ module.exports = {
                             name: user.name,
                             status: user.status,
                             location: user.location,
+                            description: user.description,
                             profilePath: user.profilePath
                         }
                     }, jwtkey)
