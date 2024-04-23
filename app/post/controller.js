@@ -134,14 +134,18 @@ module.exports = {
             if (!post) {
                 return res.status(404).json({ message: "Aktivitas tidak ditemukan!" })
             }
+
+            // validasi: jika didalam array notifications sudah ada req.user.username
+            const checkNotification = user.notifications.some(notif => notif.username.toString() === req.user.username);
     
             if(isLiked) {
                 post.likes.delete(req.user.id)
+                if(checkNotification) {
+                    user.notifications = user.notifications.filter(notif => notif.userId !== req.user.id);
+                    await user.save()
+                }
             } else {
                 post.likes.set(req.user.id, true)
-
-                // validasi: jika didalam array notifications sudah ada req.user.username
-                const checkNotification = user.notifications.some(notif => notif.username.toString() === req.user.username);
 
                 // kirim notifikasi
                 if(!checkNotification) {
