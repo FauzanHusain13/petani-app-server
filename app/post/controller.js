@@ -214,6 +214,7 @@ module.exports = {
             const { postId, commentId } = req.params
 
             const post = await Post.findOne({ _id: postId })
+            const user = await User.findOne({ _id: post.user })
             if (!post) {
                 return res.status(404).json({ message: "Aktivitas tidak ditemukan!" });
             }
@@ -230,6 +231,11 @@ module.exports = {
             }
               
             post.comments.splice(commentIndex, 1); // Menghapus komentar dari array
+            if (user.notifications) {
+                // Menggunakan filter hanya jika user.notifications sudah diinisialisasi
+                user.notifications = user.notifications.filter(notif => notif._id.toString() === commentId);
+            }
+            await user.save()
             const updatedPost = await post.save();
               
             res.status(200).json({ data: updatedPost });
